@@ -27,12 +27,13 @@ def encrypt_data(data):
     return enc.hex()
 
 
-def decrypt_data(encryptedParams):
+def decrypt_data(encryptedParams, index =0):
     cipher = AES.new(key, AES.MODE_CBC, iv)
     paddedParams = cipher.decrypt(unhexlify(encryptedParams))
-    print(paddedParams)
-    print(unpad(paddedParams, 16, style='pkcs7'))
+    # print(paddedParams)
+    print('herere', unpad(paddedParams, 16, style='pkcs7'), index)
     if b'admin&password=g0ld3n_b0y' in unpad(paddedParams, 16, style='pkcs7'):
+
         return 1
     else:
         return 0
@@ -42,26 +43,42 @@ def send_msg(s, msg):
     enc = msg.encode()
     s.send(enc)
 
+def shift(cipher, b=16, xor=None):
+    # xor = ord('w') ^ ord('r')
+    # cipher_chunks = [cipher[i:i + 16] for i in range(0, len(cipher), 16)]
+    # cipher_chunks[2] = hex(int(cipher_chunks[2][:2], 16) ^ xor)[2:] + cipher_chunks[2][2:]
+    if not xor:
+        xor = ord('b') ^ ord('a')
+    cipher = cipher[:b] + hex(int(cipher[b:b+2], 32) ^ xor)[2:] + cipher[b+2:]
+    return cipher
 
 def main(s):
     send_msg(s, 'username: ')
-    user = s.recv(4096).decode().strip()
+    user = 'XXdmin'#s.recv(4096).decode().strip()
 
     send_msg(s, user + "'s password: ")
-    passwd = s.recv(4096).decode().strip()
+    passwd = 'g0ld3n_b0y'#s.recv(4096).decode().strip()
 
     send_msg(s, wlcm_msg)
 
     msg = 'logged_username=' + user + '&password=' + passwd
 
     # try:
-    #     assert ('admin&password=g0ld3n_b0y' not in msg)
+    #     assert ('admin&parsword=g0ld3n_b0y' not in msg)
     # except AssertionError:
     #     send_msg(s, 'You cannot login as an admin from an external IP.\nYour activity has been logged. Goodbye!\n')
     #     raise
 
     msg = 'logged_username=' + user + '&password=' + passwd
-    send_msg(s, "Leaked ciphertext: " + encrypt_data(msg) + '\n')
+    send_msg(s, "Leaked ciphertext:  " + encrypt_data(msg) + '\n')
+    for i in range(1000):
+        try:
+            shifted = shift(encrypt_data(msg), 16, i)
+            if decrypt_data(shifted, index=i):
+                print('ok', i)
+        except:
+            pass
+    send_msg(s, "Shifted ciphertext: " + shifted + '\n')
     send_msg(s, "enter ciphertext: ")
 
     enc_msg = s.recv(4096).decode().strip()

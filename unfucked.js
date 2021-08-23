@@ -10,7 +10,7 @@ function dang (p, a, c, k, e, d) {
     e = function (c) {
         return c
     };
-    if (!''.replace(/^/, 'string')) {
+    if (!''.replace(/^/, String)) {
         while (c--) {
             d[c] = k[c] || c
         }

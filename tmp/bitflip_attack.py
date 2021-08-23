@@ -28,22 +28,21 @@ class AESCipher:
 def bitFlip( pos, bit, data):
     raw = b64decode(data)
     list1 = list(raw)
-    print(len(list1))
     list1[pos] = ord(chr(ord(data[pos])^bit))
     return b64encode(bytes(list1))
 
 if __name__ == '__main__':
-        key = b'Sixteen byte key'
-        msg = "logged_username=admin&password=g0ld3n_b0y"
+    key = b'Sixteen byte key'
+    msg = "logged_username=pdmin&password=g0ld3n_b0y"
 
-        # print('Original Message:', msg)
+    # print('Original Message:', msg)
 
-        ctx = AESCipher(key).encrypt(msg).decode('utf-8')
-        # print('Ciphertext      :', ctx)
+    ctx = AESCipher(key).encrypt(msg)
+    print(ctx)
+    # print('Ciphertext      :', ctx)
 
-        ctx = bitFlip(1, 2, ctx)
+    ctx = bitFlip(16, 67, '478c5754e92156bb6cf15dfd4c9b58a17d8470244ec6f8bf47f63abe631f642ef958c34d99aaba26b9309c10f44d397a')
+    print(ctx)
+    # print('Message...      :', AESCipher(key).decrypt(ctx).decode('utf-8'))
 
-        # print('Message...      :', AESCipher(key).decrypt(ctx).decode('utf-8'))
-
-        # if msg != AESCipher(key).decrypt(ctx).decode('utf-8'):
-        print(AESCipher(key).decrypt(ctx).decode('utf-8'))
+    # if msg != AESCipher(key).decrypt(ctx).decode('utf-8'):
